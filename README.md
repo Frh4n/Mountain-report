@@ -1,1 +1,526 @@
 # Mountain-report
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mountain Report</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #c8f542;
+    --accent2: #f5a442;
+    --text: #f0f0f0;
+    --muted: #666;
+    --danger: #ff4d4d;
+  }
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+min-height: 100vh;
+padding: 20px 16px 60px;
+}
+
+header {
+text-align: center;
+margin-bottom: 28px;
+padding-bottom: 20px;
+border-bottom: 1px solid var(–border);
+}
+
+header h1 {
+font-family: ‘Syne’, sans-serif;
+font-size: 2rem;
+font-weight: 800;
+letter-spacing: -1px;
+color: var(–accent);
+}
+
+header p {
+font-size: 0.72rem;
+color: var(–muted);
+margin-top: 4px;
+letter-spacing: 2px;
+text-transform: uppercase;
+}
+
+.section {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 16px;
+margin-bottom: 14px;
+}
+
+.section-title {
+font-family: ‘Syne’, sans-serif;
+font-size: 0.7rem;
+font-weight: 700;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: var(–accent);
+margin-bottom: 14px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.section-title::after {
+content: ‘’;
+flex: 1;
+height: 1px;
+background: var(–border);
+}
+
+.field {
+margin-bottom: 12px;
+}
+
+label {
+display: block;
+font-size: 0.65rem;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 5px;
+}
+
+input, select, textarea {
+width: 100%;
+background: var(–bg);
+border: 1px solid var(–border);
+border-radius: 8px;
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+font-size: 0.9rem;
+padding: 10px 12px;
+outline: none;
+transition: border-color 0.2s;
+-webkit-appearance: none;
+}
+
+input:focus, select:focus, textarea:focus {
+border-color: var(–accent);
+}
+
+input[readonly] {
+color: var(–accent2);
+border-color: #2a2a1a;
+background: #1a1800;
+}
+
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.calc-badge {
+font-size: 0.6rem;
+background: #1a2400;
+color: var(–accent);
+border: 1px solid #2a3a00;
+border-radius: 4px;
+padding: 1px 5px;
+letter-spacing: 1px;
+text-transform: uppercase;
+margin-left: 6px;
+vertical-align: middle;
+}
+
+.toggle-row {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 8px 0;
+border-bottom: 1px solid var(–border);
+}
+
+.toggle-row:last-child { border-bottom: none; }
+
+.toggle-label {
+font-size: 0.78rem;
+color: var(–text);
+}
+
+.toggle-label span {
+font-size: 0.65rem;
+color: var(–muted);
+display: block;
+margin-top: 1px;
+}
+
+.toggle {
+position: relative;
+width: 44px;
+height: 24px;
+flex-shrink: 0;
+}
+
+.toggle input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+position: absolute;
+inset: 0;
+background: var(–border);
+border-radius: 24px;
+cursor: pointer;
+transition: background 0.2s;
+}
+
+.slider::before {
+content: ‘’;
+position: absolute;
+width: 18px;
+height: 18px;
+left: 3px;
+top: 3px;
+background: var(–muted);
+border-radius: 50%;
+transition: transform 0.2s, background 0.2s;
+}
+
+.toggle input:checked + .slider { background: #1a3000; }
+.toggle input:checked + .slider::before {
+transform: translateX(20px);
+background: var(–accent);
+}
+
+.gap-neg { color: var(–danger) !important; }
+.gap-pos { color: var(–accent) !important; }
+
+.generate-btn {
+width: 100%;
+padding: 16px;
+background: var(–accent);
+color: #000;
+font-family: ‘Syne’, sans-serif;
+font-weight: 800;
+font-size: 1rem;
+letter-spacing: 1px;
+border: none;
+border-radius: 12px;
+cursor: pointer;
+margin-top: 6px;
+transition: opacity 0.2s, transform 0.1s;
+}
+
+.generate-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+.output-section {
+margin-top: 14px;
+display: none;
+}
+
+.output-section.visible { display: block; }
+
+.output-box {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 16px;
+font-size: 0.82rem;
+line-height: 1.8;
+white-space: pre-wrap;
+word-break: break-word;
+color: #ccc;
+}
+
+.copy-btn {
+width: 100%;
+padding: 14px;
+background: transparent;
+color: var(–accent);
+font-family: ‘Syne’, sans-serif;
+font-weight: 700;
+font-size: 0.9rem;
+letter-spacing: 2px;
+border: 1px solid var(–accent);
+border-radius: 12px;
+cursor: pointer;
+margin-top: 10px;
+text-transform: uppercase;
+transition: background 0.2s, color 0.2s;
+}
+
+.copy-btn.copied {
+background: var(–accent);
+color: #000;
+}
+
+select option { background: #1a1a1a; }
+
+textarea { resize: vertical; min-height: 70px; }
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1>🏔️ MOUNTAIN</h1>
+  <p>Closing Report Generator</p>
+</header>
+
+<!-- DATE -->
+
+<div class="section">
+  <div class="section-title">Date</div>
+  <div class="field">
+    <label>Date</label>
+    <input type="date" id="date">
+  </div>
+</div>
+
+<!-- MANPOWER -->
+
+<div class="section">
+  <div class="section-title">Manpower</div>
+  <div class="field">
+    <label>Opening</label>
+    <input type="text" id="opening" placeholder="Name">
+  </div>
+  <div class="field">
+    <label>Middle</label>
+    <input type="text" id="middle" placeholder="Name or —">
+  </div>
+  <div class="field">
+    <label>Closing</label>
+    <input type="text" id="closing" placeholder="Name">
+  </div>
+</div>
+
+<!-- BUSINESS -->
+
+<div class="section">
+  <div class="section-title">Business</div>
+  <div class="row2">
+    <div class="field">
+      <label>GMV Piloting (RM)</label>
+      <input type="number" id="gmv_piloting" placeholder="17500" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>GMV Realized (RM)</label>
+      <input type="number" id="gmv_realized" placeholder="6726" inputmode="numeric">
+    </div>
+  </div>
+  <div class="field">
+    <label>Gap (RM) <span class="calc-badge">auto</span></label>
+    <input type="text" id="gap" readonly placeholder="—">
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label>Ticket</label>
+      <input type="number" id="ticket" placeholder="90" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Quantity</label>
+      <input type="number" id="quantity" placeholder="129" inputmode="numeric">
+    </div>
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label>Margin Rate (%)</label>
+      <input type="number" id="margin_rate" placeholder="31.4" step="0.1" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Avg Basket (RM)</label>
+      <input type="number" id="avg_basket" placeholder="75" inputmode="numeric">
+    </div>
+  </div>
+  <div class="row2">
+    <div class="field">
+      <label>Avg Selling Price <span class="calc-badge">auto</span></label>
+      <input type="text" id="avg_sp" readonly placeholder="—">
+    </div>
+    <div class="field">
+      <label>Avg Qty <span class="calc-badge">auto</span></label>
+      <input type="text" id="avg_qty" readonly placeholder="—">
+    </div>
+  </div>
+</div>
+
+<!-- OPERATION -->
+
+<div class="section">
+  <div class="section-title">Operation</div>
+
+  <div class="toggle-row">
+    <div class="toggle-label">1. Receiving</div>
+    <label class="toggle"><input type="checkbox" id="op1" checked><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">2. Fitting Room</div>
+    <label class="toggle"><input type="checkbox" id="op2" checked><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">3. Basic & Inventory</div>
+    <label class="toggle"><input type="checkbox" id="op3" checked><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">4. Freshness</div>
+    <label class="toggle"><input type="checkbox" id="op4" checked><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">5. Label & Sign</div>
+    <label class="toggle"><input type="checkbox" id="op5" checked><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">6. Facing</div>
+    <label class="toggle"><input type="checkbox" id="op6" checked><span class="slider"></span></label>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">7. Return</div>
+    <label class="toggle"><input type="checkbox" id="op7"><span class="slider"></span></label>
+  </div>
+</div>
+
+<!-- PENDING & REMARKS -->
+
+<div class="section">
+  <div class="section-title">Notes</div>
+  <div class="field">
+    <label>Pending Task</label>
+    <textarea id="pending" placeholder="Leave blank if none"></textarea>
+  </div>
+  <div class="field">
+    <label>Remarks</label>
+    <textarea id="remarks" placeholder="Leave blank if none"></textarea>
+  </div>
+</div>
+
+<button class="generate-btn" onclick="generate()">⚡ Generate Report</button>
+
+<div class="output-section" id="outputSection">
+  <div class="section-title" style="margin:16px 0 10px; color: var(--accent); font-family:'Syne',sans-serif; font-size:0.7rem; letter-spacing:3px; text-transform:uppercase;">Preview</div>
+  <div class="output-box" id="outputBox"></div>
+  <button class="copy-btn" id="copyBtn" onclick="copyReport()">Copy to Clipboard</button>
+</div>
+
+<script>
+  // Auto-set today's date
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
+
+  // Auto-calc on input
+  ['gmv_piloting','gmv_realized','ticket','quantity'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calc);
+  });
+
+  function calc() {
+    const pilot = parseFloat(document.getElementById('gmv_piloting').value) || 0;
+    const realized = parseFloat(document.getElementById('gmv_realized').value) || 0;
+    const ticket = parseFloat(document.getElementById('ticket').value) || 0;
+    const qty = parseFloat(document.getElementById('quantity').value) || 0;
+
+    const gap = realized - pilot;
+    const gapEl = document.getElementById('gap');
+    if (pilot && realized) {
+      gapEl.value = (gap >= 0 ? '+' : '') + 'RM' + gap.toFixed(0);
+      gapEl.className = gap >= 0 ? 'gap-pos' : 'gap-neg';
+    } else { gapEl.value = ''; }
+
+    if (realized && qty) {
+      document.getElementById('avg_sp').value = 'RM' + (realized / qty).toFixed(2);
+    } else { document.getElementById('avg_sp').value = ''; }
+
+    if (qty && ticket) {
+      document.getElementById('avg_qty').value = (qty / ticket).toFixed(2);
+    } else { document.getElementById('avg_qty').value = ''; }
+  }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+    return `${d.getDate()}/${months[d.getMonth()]}/${d.getFullYear()}, ${days[d.getDay()]}`;
+  }
+
+  function opStatus(id) {
+    return document.getElementById(id).checked ? 'CLEAR' : 'ISSUE';
+  }
+
+  function generate() {
+    const dateVal = document.getElementById('date').value;
+    const pilot = parseFloat(document.getElementById('gmv_piloting').value) || 0;
+    const realized = parseFloat(document.getElementById('gmv_realized').value) || 0;
+    const ticket = document.getElementById('ticket').value || '—';
+    const qty = parseFloat(document.getElementById('quantity').value) || 0;
+    const margin = document.getElementById('margin_rate').value || '—';
+    const basket = document.getElementById('avg_basket').value || '—';
+    const gap = realized - pilot;
+    const avgSP = qty ? (realized / qty).toFixed(2) : '—';
+    const avgQty = qty && ticket !== '—' ? (qty / parseFloat(ticket)).toFixed(2) : '—';
+
+    const opening = document.getElementById('opening').value || '—';
+    const middle = document.getElementById('middle').value || '—';
+    const closing = document.getElementById('closing').value || '—';
+
+    const pending = document.getElementById('pending').value.trim() || '-';
+    const remarks = document.getElementById('remarks').value.trim() || '-';
+
+    const gapStr = pilot && realized
+      ? (gap >= 0 ? '+RM' + gap.toFixed(0) : '-RM' + Math.abs(gap).toFixed(0))
+      : '—';
+
+    const report =
+`*MOUNTAIN 🏔️*
+${formatDate(dateVal)}
+
+*MANPOWER*
+Opening: ${opening}
+Middle: ${middle}
+Closing: ${closing}
+
+*BUSINESS*
+GMV Piloting: ${pilot ? pilot.toLocaleString() : '—'}
+GMV Realized: RM${realized ? realized.toLocaleString() : '—'}
+Gap: ${gapStr}
+Ticket: ${ticket}
+Quantity: ${qty || '—'}
+Margin Rate: ${margin}%
+Average Basket: RM${basket}
+Average Selling Price: RM${avgSP}
+Average Qty: ${avgQty}
+
+*OPERATION*
+1. Receiving : ${opStatus('op1')}
+2. ⁠Fitting room : ${opStatus('op2')}
+3. Basic & inventory: ${opStatus('op3')}
+4. Freshness: ${opStatus('op4')}
+5. Label & sign: ${opStatus('op5')}
+6. Facing: ${opStatus('op6')}
+7. ⁠Return: ${document.getElementById('op7').checked ? 'DONE' : '-'}
+
+*PENDING TASK*
+${pending}
+
+*REMARKS*
+${remarks}`;
+
+    document.getElementById('outputBox').textContent = report;
+    document.getElementById('outputSection').classList.add('visible');
+    document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function copyReport() {
+    const text = document.getElementById('outputBox').textContent;
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy to Clipboard';
+      btn.classList.remove('copied');
+    }, 2000);
+  }
+</script>
+
+</body>
+</html>
